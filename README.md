@@ -6,11 +6,9 @@
 
 > 以下是我自己的QQ空间相册下载结果，下载的照片在运行目录的`output`目录下，按照`QQ号-->相册名-->照片`存储
 
-![](https://i.loli.net/2020/03/15/jxOsVLuFtpQv6oh.png)
+![](https://i.loli.net/2020/03/15/yr4EwvJCURVShLf.png)
 
-![](https://i.loli.net/2020/03/15/DB2rz9xwjhdvZyl.png)
-
-![](https://i.loli.net/2020/03/15/7xMNGoCrYjIF3tz.png)
+![](https://i.loli.net/2020/03/15/1dh49Eou6iWNJay.png)
 
 # 准备
 
@@ -35,10 +33,10 @@ $ vim application.conf
         }
     ]
 }
-$ bin/QZone-Photo -Dconfig.file=application.conf
+$ bin/QZone-Photo
 =================config load finished=================
 =================qq size 1=================
-=================fetch photos for 1961396387=================
+=================fetch photos for ***=================
 [INFO] find album: 朋友网头像, photos: 0
 [INFO] find album: 高中同学, photos: 23
 ...
@@ -89,15 +87,15 @@ $ bin/QZone-Photo -Dconfig.file=application.conf
 
 `g_tk`具体什么用途，我不清楚，但是不填，无法正常请求。
 
-例如，我这里的`g_tk=1475842`
+例如，我这里的`g_tk=1829449952`
 
-![](https://i.loli.net/2020/03/15/sutdMDlxJN9qUSC.png)
+![](https://i.loli.net/2020/03/15/7c3pIEHgZySDzej.png)
 
 ## 获取cookie
 
 往下翻到`Request Headers`，复制`cookie`
 
-![](https://i.loli.net/2020/03/15/pY5tL4a1XIEPnNg.png)
+![](https://i.loli.net/2020/03/15/c48nXwS2loAaDrN.png)
 
 最后一步，别忘了，更改你的QQ号
 

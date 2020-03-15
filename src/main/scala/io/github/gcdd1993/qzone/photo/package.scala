@@ -22,7 +22,8 @@ package object photo {
   val albumListUri = "fcg_list_album_v3"
   val photoListUri = "cgi_list_photo"
 
-  val config: Config = ConfigFactory.load()
+  val config: Config = ConfigFactory.parseFile(new File("application.conf"))
+    .withFallback(ConfigFactory.load())
 
   val output: String = {
     val key = "output"
