@@ -11,8 +11,13 @@ import java.util.UUID
  */
 object QZoneCrawler extends App {
 
+  // check config
+  println("=================config load finished=================")
+  println(s"=================qq size ${qqAccesses.size}=================")
+
   qqAccesses
     .foreach(qqAccess => {
+      println(s"=================fetch photos for ${qqAccess.qq}=================")
       PhotoProcessor.listAlbum(qqAccess)
         .foreach(album => {
           println(s"find album : ${album.name}")
