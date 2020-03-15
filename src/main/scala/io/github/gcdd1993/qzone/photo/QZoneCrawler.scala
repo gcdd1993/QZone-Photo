@@ -62,7 +62,7 @@ object QZoneCrawler extends App {
                 Files.createDirectories(dir)
               }
               if (cache.contains(photo.url)) {
-                println(s"[WARN] photo ${photo.url} is already downloaded, skip...")
+                println(s"[WARN] photo ${photo.name} is already downloaded, skip...")
               } else {
                 downloadFile(photo.url, s"$dir/${UUID.randomUUID()}.jpg")
                 println(s"[INFO] download photo: ${photo.name}")

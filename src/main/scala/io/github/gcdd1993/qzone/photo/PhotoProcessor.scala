@@ -54,16 +54,17 @@ object PhotoProcessor {
     val albumJsonArray = JSON.parseObject(res)
       .getJSONObject("data")
       .getJSONArray("albumListModeSort")
-      .toArray()
     if (albumJsonArray == null ||
       albumJsonArray.isEmpty) {
       return List.empty
     }
-    albumJsonArray.map(e => {
-      val node = JSON.parseObject(e.toString)
-      Album(node.getString("id"),
-        node.getString("name"))
-    }).toList
+    albumJsonArray
+      .toArray
+      .map(e => {
+        val node = JSON.parseObject(e.toString)
+        Album(node.getString("id"),
+          node.getString("name"))
+      }).toList
   }
 
   /**
