@@ -2,7 +2,8 @@ package io.github.gcdd1993.qzone
 
 import com.typesafe.config.{Config, ConfigFactory}
 import java.io.File
-import java.net.URL
+import java.net.{SocketException, URL}
+import java.util.concurrent.TimeUnit
 
 import com.alibaba.fastjson.JSON
 import okhttp3.{OkHttpClient, Request}
@@ -10,8 +11,12 @@ import okhttp3.{OkHttpClient, Request}
 import scala.sys.process._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.language.postfixOps
+import scala.util.Random
 
 package object photo {
+
+  val random = new Random()
 
   val baseUrl = "https://user.qzone.qq.com/proxy/domain/photo.qzone.qq.com/fcgi-bin"
   val albumListUri = "fcg_list_album_v3"
@@ -55,7 +60,13 @@ package object photo {
     }
   }
 
-  val client = new OkHttpClient()
+  private[this] val client: OkHttpClient = new OkHttpClient.Builder()
+    .connectTimeout(config.getLong("http.timeout"), TimeUnit.SECONDS)
+    .readTimeout(config.getLong("http.read_timeout"), TimeUnit.SECONDS)
+    .retryOnConnectionFailure(config.getBoolean("http.retry"))
+    .build()
+
+  private[this] val sleepSeconds = config.getInt("http.sleep")
 
   def get(url: String,
           params: Map[String, _],
@@ -94,11 +105,17 @@ package object photo {
       msSubCode != 0) {
       println(s"[ERROR] code: $msCode, subcode: $msSubCode, message: $message")
     }
+    Thread.sleep(sleepSeconds)
     cleanJson
   }
 
-  def downloadFile(url: String, filename: String): String = {
-    new URL(url) #> new File(filename) !!
+  def downloadFile(url: String, filename: String): Unit = {
+    try {
+      new URL(url) #> new File(filename) !!
+    }
+    catch {
+      case e: SocketException => println(s"[ERROR] ${e.getMessage}")
+    }
   }
 
 }
