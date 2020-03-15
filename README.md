@@ -105,4 +105,4 @@ $ bin/QZone-Photo -Dconfig.file=application.conf
 
 > 关于QQ空间的相册接口，我也简单列了一下
 
-[QQ空间相册解析](#Analysis.md)
+[QQ空间相册解析](https://github.com/gcdd1993/QZone-Photo/blob/master/Analysis.md)
