@@ -1,0 +1,5 @@
+version "git describe --tags --always --first-parent".execute().text.trim()
+
+compileScala.doLast {
+    println("version: ${version}")
+}

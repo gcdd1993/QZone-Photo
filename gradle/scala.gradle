@@ -1,0 +1,32 @@
+buildscript {
+    ext {
+        scalaVersion = '2.12.10'
+    }
+}
+
+apply plugin: 'scala'
+
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala']
+        }
+    }
+    test {
+        scala {
+            srcDirs = ['src/test/scala']
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    maven() {
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.scala-lang:scala-library:${scalaVersion}"
+}
