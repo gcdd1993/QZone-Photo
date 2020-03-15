@@ -93,4 +93,6 @@ fabric.properties
 
 output/
 .idea/
+.idea/codeStyles/
+.idea/inspectionProfiles/
 config/
