@@ -12,7 +12,7 @@ apply plugin: 'application'
 group 'io.github.gcdd1993'
 
 application {
-    mainClassName = 'com.maxtropy.core.system.persian.Main'
+    mainClassName = 'io.github.gcdd1993.qzone.photo.QZoneCrawler'
 }
 
 tasks.withType(JavaCompile) {

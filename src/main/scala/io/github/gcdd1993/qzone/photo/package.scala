@@ -1,17 +1,16 @@
 package io.github.gcdd1993.qzone
 
+import com.typesafe.config.{Config, ConfigFactory}
 import java.io.File
 import java.net.URL
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.alibaba.fastjson.JSON
 import okhttp3.{OkHttpClient, Request}
 
 import scala.sys.process._
+import scala.collection.JavaConverters._
+import scala.collection.mutable
 
-/**
- * @author gaochen
- * @date 2020/3/15
- */
 package object photo {
 
   val baseUrl = "https://user.qzone.qq.com/proxy/domain/photo.qzone.qq.com/fcgi-bin"
@@ -20,22 +19,47 @@ package object photo {
 
   val config: Config = ConfigFactory.load()
 
-  val qq: String = loadConfig("qq")
-  val cookie: String = loadConfig("cookie")
-  val output: String = loadConfig("output")
+  val output: String = {
+    val key = "output"
+    checkConfig(config, key)
+    config.getString(key)
+  }
 
-  def loadConfig(key: String): String = {
-    if (!config.hasPath("cookie")) {
-      println(s"Please add your QZone cookie to config/application.conf with key '$key'")
+  val qqAccesses: mutable.Seq[QQAccess] = {
+    val key = "qq_access"
+    checkConfig(config, key)
+    config.getConfigList(key)
+      .asScala
+      .map(configNode => {
+        QQAccess({
+          val k = "qq"
+          checkConfig(configNode, k)
+          configNode.getString(k)
+        }, {
+          val k = "g_tk"
+          checkConfig(configNode, k)
+          configNode.getString(k)
+        }, {
+          val k = "cookie"
+          checkConfig(configNode, k)
+          configNode.getString(k)
+        })
+      })
+  }
+
+  def checkConfig(config: Config,
+                  key: String): Unit = {
+    if (!config.hasPath(key)) {
+      println(s"Please set config with key '$key' to your config file!")
       System.exit(1)
     }
-    config.getString(key)
   }
 
   val client = new OkHttpClient()
 
   def get(url: String,
-          params: Map[String, _]): String = {
+          params: Map[String, _],
+          cookie: String): String = {
     val buf = new StringBuilder
     buf ++= url
     buf += '?'
@@ -50,7 +74,27 @@ package object photo {
       .addHeader("Cookie", cookie)
       .build()
     val response = client.newCall(request).execute
-    response.body().string()
+    val code = response.code()
+    if (code != 200) {
+      println(s"[ERROR] http code error :$code")
+      System.exit(1)
+    }
+    val body = response.body().string()
+    // 1.去除_Callback()
+    val cleanJson = body
+      .replace("_Callback(", "")
+      .replace(");", "")
+
+    val jsonObj = JSON.parseObject(cleanJson)
+    val msCode = jsonObj.getInteger("code")
+    val msSubCode = jsonObj.getInteger("subcode")
+    val message = jsonObj.getString("message")
+
+    if (msCode != 0 ||
+      msSubCode != 0) {
+      println(s"[ERROR] code: $msCode, subcode: $msSubCode, message: $message")
+    }
+    cleanJson
   }
 
   def downloadFile(url: String, filename: String): String = {

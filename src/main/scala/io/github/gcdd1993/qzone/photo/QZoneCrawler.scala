@@ -11,18 +11,21 @@ import java.util.UUID
  */
 object QZoneCrawler extends App {
 
-  PhotoProcessor.listAlbum(qq)
-    .foreach(album => {
-      println(s"find album : ${album.name}")
-      PhotoProcessor.listPhoto(album, qq)
-        .foreach(photo => {
-          println(s"find photo: ${photo.name}, download url is ${photo.url}")
+  qqAccesses
+    .foreach(qqAccess => {
+      PhotoProcessor.listAlbum(qqAccess)
+        .foreach(album => {
+          println(s"find album : ${album.name}")
+          PhotoProcessor.listPhoto(album, qqAccess)
+            .foreach(photo => {
+              println(s"find photo: ${photo.name}, download url is ${photo.url}")
 
-          val dir = Paths.get(output, album.name)
-          if (!Files.exists(dir)) {
-            Files.createDirectories(dir)
-          }
-          downloadFile(photo.url, s"$dir/${UUID.randomUUID()}.jpg")
+              val dir = Paths.get(output, s"${qqAccess.qq}/${album.name}")
+              if (!Files.exists(dir)) {
+                Files.createDirectories(dir)
+              }
+              downloadFile(photo.url, s"$dir/${UUID.randomUUID()}.jpg")
+            })
         })
     })
 }

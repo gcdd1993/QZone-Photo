@@ -15,6 +15,17 @@ case class Photo(name: String,
                  desc: String,
                  url: String)
 
+/**
+ * QQ配置
+ *
+ * @param qq     QQ号
+ * @param gTk    g_tk
+ * @param cookie cookie
+ */
+case class QQAccess(qq: String,
+                    gTk: String,
+                    cookie: String)
+
 object PhotoProcessor {
 
   /**
@@ -22,11 +33,11 @@ object PhotoProcessor {
    *
    * @return 相册列表
    */
-  def listAlbum(qq: String): List[Album] = {
+  def listAlbum(qqAccess: QQAccess): List[Album] = {
     val params = Map(
-      "g_tk" -> "981116523",
-      "hostUin" -> qq,
-      "uin" -> qq,
+      "g_tk" -> qqAccess.gTk,
+      "hostUin" -> qqAccess.qq,
+      "uin" -> qqAccess.qq,
       "appid" -> 4,
       "inCharset" -> "utf-8",
       "outCharset" -> "utf-8",
@@ -37,13 +48,10 @@ object PhotoProcessor {
       "idcNum" -> 4
     )
     val url = s"$baseUrl/$albumListUri"
-    val res = get(url, params)
+    val res = get(url, params, qqAccess.cookie)
 
-    // 1.去除_Callback()
-    val cleanJson = res.replace("_Callback(", "")
-      .replace(");", "")
     // 2.解析相册列表
-    JSON.parseObject(cleanJson)
+    JSON.parseObject(res)
       .getJSONObject("data")
       .getJSONArray("albumListModeSort")
       .toArray()
@@ -58,14 +66,14 @@ object PhotoProcessor {
    * 列举照片
    */
   def listPhoto(album: Album,
-                qq: String): List[Photo] = {
+                qqAccess: QQAccess): List[Photo] = {
     val params = Map(
-      "g_tk" -> "981116523",
-      "hostUin" -> qq,
+      "g_tk" -> qqAccess.gTk,
+      "hostUin" -> qqAccess.qq,
       "topicId" -> album.id,
       "pageStart" -> 0,
       "pageNum" -> Int.MaxValue,
-      "uin" -> qq,
+      "uin" -> qqAccess.qq,
       "appid" -> 4,
       "inCharset" -> "utf-8",
       "outCharset" -> "utf-8",
@@ -74,12 +82,9 @@ object PhotoProcessor {
       "format" -> "jsonp"
     )
     val url = s"$baseUrl/$photoListUri"
-    val res = get(url, params)
-    // 1.去除_Callback()
-    val cleanJson = res.replace("_Callback(", "")
-      .replace(");", "")
+    val res = get(url, params, qqAccess.cookie)
     // 2.解析相册列表
-    val photoJsonArray = JSON.parseObject(cleanJson)
+    val photoJsonArray = JSON.parseObject(res)
       .getJSONObject("data")
       .getJSONArray("photoList")
     if (photoJsonArray == null ||
